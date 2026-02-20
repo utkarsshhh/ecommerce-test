@@ -1,14 +1,13 @@
-from pydantic import BaseModel, EmailStr, Field  # external-lib: pydantic
+from sqlalchemy import Column, Integer, String  # external-lib: sqlalchemy
+from app.db.session import Base  # internal-file: db/session
 
+class User(Base):  # User model for the database
+    __tablename__ = 'users'  # Define the table name
 
-class UserLogin(BaseModel):  # Define a Pydantic model for user login
-    username: str = Field(..., description="Username or email of the user")  # Required field for username or email
-    password: str = Field(..., min_length=6, description="Password of the user")  # Required field for password with minimum length
+    id = Column(Integer, primary_key=True, index=True)  # User ID
+    username = Column(String, unique=True, index=True)  # Unique username
+    email = Column(String, unique=True, index=True)  # Unique email address
+    hashed_password = Column(String)  # Hashed password
 
-    class Config:  # Configuration for the Pydantic model
-        schema_extra = {  # Example of how the model can be used
-            "example": {  # Example data
-                "username": "user@example.com",
-                "password": "securepassword"
-            }
-        }
+    def __repr__(self):  # Represent the User object
+        return f'<User id={self.id} username={self.username}>'  # String representation of the user
