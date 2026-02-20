@@ -1,25 +1,21 @@
-from fastapi import FastAPI, Depends  # external-lib: fastapi
+from fastapi import FastAPI  # external-lib: fastapi
 from fastapi.middleware.cors import CORSMiddleware  # external-lib: fastapi
-from database import get_db  # internal-file: database
-from sqlalchemy.orm import Session  # external-lib: sqlalchemy
+from app.api.auth import router as auth_router  # internal-file: api/auth
 
-app = FastAPI()  # Create FastAPI instance
+app = FastAPI()
 
-# Allow CORS for frontend access
+# Setup CORS to allow frontend access
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update this in production to restrict origins
+    allow_origins=["*"],  # TODO: Replace with specific origins in production
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-)  
+)
 
-@app.get("/")  # Root endpoint
-async def root():  # Define root path
-    return {"message": "Welcome to the User Authentication API!"}  # Response message
+# Include authentication routes
+app.include_router(auth_router)
 
-# Include any additional routes or endpoints here
-
-# Dependency injection for using the database session
-
-# This file initializes the FastAPI application and sets up the CORS middleware.
+@app.get("/")
+async def root():  # type: ignore
+    return {"message": "Welcome to the User Authentication API"}
